@@ -54,14 +54,17 @@ body {
   font-size: 16px;
   background: var(--navy);
   color: var(--white);
+  min-height: 100vh;
   min-height: 100dvh;
   overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* ── App wrapper ────────────────────────────────────────────── */
 .app-wrapper {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
   min-height: 100dvh;
   max-width: 640px;
   margin: 0 auto;
@@ -118,7 +121,6 @@ body {
   flex: 1;
   padding: 1.25rem;
   padding-bottom: calc(var(--bottom-nav-h) + 1.25rem);
-  overflow-y: auto;
 }
 
 /* ── VIEWS (tab switching) ──────────────────────────────────── */
