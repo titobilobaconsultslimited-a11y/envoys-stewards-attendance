@@ -1,0 +1,9 @@
+{
+  "name": "envoys-stewards-attendance",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Biometric attendance system — Neon + Vercel serverless",
+  "dependencies": {
+    "@neondatabase/serverless": "^0.9.0"
+  }
+}

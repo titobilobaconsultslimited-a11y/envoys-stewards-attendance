@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Envoys Stewards Attendance — Biometric Attendance</title>
+
+  <!-- Google Font: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ════════════════════════════════════════
+       TOAST NOTIFICATION CONTAINER
+  ════════════════════════════════════════ -->
+  <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- ════════════════════════════════════════
+       LOADING OVERLAY
+  ════════════════════════════════════════ -->
+  <div id="loading-overlay" class="hidden" role="status" aria-label="Loading">
+    <div class="spinner"></div>
+    <p id="loading-text">Please wait…</p>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       APP WRAPPER
+  ════════════════════════════════════════ -->
+  <div class="app-wrapper">
+
+    <!-- ── HEADER ── -->
+    <header class="app-header">
+      <div class="header-inner">
+        <div class="logo">
+          <span class="logo-icon">🔏</span>
+          <span class="logo-text">Envoys Stewards Attendance</span>
+        </div>
+        <p class="header-tagline">Biometric Attendance System</p>
+      </div>
+    </header>
+
+    <!-- ── MAIN CONTENT AREA ── -->
+    <main class="main-content">
+
+      <!-- ════════════════════════════════
+           VIEW 1: ATTENDANCE (default)
+      ════════════════════════════════ -->
+      <section id="view-attendance" class="view active" aria-label="Attendance">
+
+        <div class="view-header">
+          <h2 class="view-title">Mark Attendance</h2>
+          <p class="view-subtitle">Enter your Staff ID and scan your biometric to check in or out.</p>
+        </div>
+
+        <div class="card">
+          <div class="form-group">
+            <label for="attendance-staff-id" class="form-label">Staff ID</label>
+            <input
+              type="text"
+              id="attendance-staff-id"
+              class="form-input"
+              placeholder="e.g. STF-001"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </div>
+
+          <!-- Datalist for auto-suggest (populated dynamically) -->
+          <datalist id="staff-suggestions"></datalist>
+
+          <div class="btn-row">
+            <button id="btn-check-in" class="btn btn-success btn-large" type="button">
+              <span class="btn-icon">🔏</span>
+              <span>Check In</span>
+            </button>
+            <button id="btn-check-out" class="btn btn-danger btn-large" type="button">
+              <span class="btn-icon">🔏</span>
+              <span>Check Out</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Today's recent activity feed -->
+        <div class="card">
+          <h3 class="card-title">Today's Activity</h3>
+          <div id="activity-feed" class="activity-feed">
+            <p class="empty-state">No activity yet today.</p>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ════════════════════════════════
+           VIEW 2: REGISTER
+      ════════════════════════════════ -->
+      <section id="view-register" class="view" aria-label="Register">
+
+        <div class="view-header">
+          <h2 class="view-title">Register Staff</h2>
+          <p class="view-subtitle">Enter your details and scan your fingerprint / Face ID to register.</p>
+        </div>
+
+        <div class="card">
+          <div class="form-group">
+            <label for="reg-name" class="form-label">Full Name</label>
+            <input
+              type="text"
+              id="reg-name"
+              class="form-input"
+              placeholder="e.g. John Doe"
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="reg-staff-id" class="form-label">Staff ID</label>
+            <input
+              type="text"
+              id="reg-staff-id"
+              class="form-input"
+              placeholder="e.g. STF-001"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </div>
+
+          <button id="btn-register" class="btn btn-primary btn-large btn-full" type="button">
+            <span class="btn-icon">🔏</span>
+            <span>Register Fingerprint / Face ID</span>
+          </button>
+        </div>
+
+        <!-- WebAuthn info callout -->
+        <div class="callout callout-info">
+          <p>
+            <strong>ℹ️ Note:</strong> Biometric registration uses your device's built-in security
+            (fingerprint sensor or Face ID). Your biometric data never leaves your device.
+          </p>
+        </div>
+
+        <!-- HTTPS warning callout -->
+        <div class="callout callout-warning">
+          <p>
+            <strong>⚠️ HTTPS Required:</strong> WebAuthn only works on secure connections (HTTPS)
+            or <code>localhost</code>. Deploy to Netlify or Vercel for production use.
+          </p>
+        </div>
+
+      </section>
+
+      <!-- ════════════════════════════════
+           VIEW 3: ADMIN DASHBOARD
+      ════════════════════════════════ -->
+      <section id="view-admin" class="view" aria-label="Admin Dashboard">
+
+        <!-- PIN gate (shown when not yet authenticated) -->
+        <div id="admin-gate" class="card">
+          <div class="view-header" style="padding:0 0 1.5rem;">
+            <h2 class="view-title">Admin Login</h2>
+            <p class="view-subtitle">Enter the admin PIN to continue.</p>
+          </div>
+          <div class="form-group">
+            <label for="admin-pin" class="form-label">Admin PIN</label>
+            <input
+              type="password"
+              id="admin-pin"
+              class="form-input"
+              placeholder="Enter PIN"
+              autocomplete="current-password"
+              maxlength="20"
+            />
+          </div>
+          <button id="btn-admin-login" class="btn btn-primary btn-large btn-full" type="button">
+            🔐 Unlock Dashboard
+          </button>
+        </div>
+
+        <!-- Dashboard content (hidden until PIN is correct) -->
+        <div id="admin-dashboard" class="hidden">
+
+          <!-- Summary cards -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-label">Check-ins Today</span>
+              <span id="stat-checkins" class="stat-value">—</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Check-outs Today</span>
+              <span id="stat-checkouts" class="stat-value">—</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Unique Staff Today</span>
+              <span id="stat-unique" class="stat-value">—</span>
+            </div>
+          </div>
+
+          <!-- Filter bar -->
+          <div class="card filter-bar">
+            <div class="filter-row">
+              <div class="form-group" style="flex:1;">
+                <label for="filter-date" class="form-label">Filter by Date</label>
+                <input type="date" id="filter-date" class="form-input" />
+              </div>
+              <div class="form-group" style="flex:1;">
+                <label for="filter-staff" class="form-label">Filter by Staff ID</label>
+                <input type="text" id="filter-staff" class="form-input" placeholder="e.g. STF-001" />
+              </div>
+            </div>
+            <div class="btn-row btn-row--wrap">
+              <button id="btn-filter" class="btn btn-primary" type="button">🔍 Apply Filter</button>
+              <button id="btn-refresh" class="btn btn-outline" type="button">🔄 Refresh</button>
+              <button id="btn-export-csv" class="btn btn-outline" type="button">📥 Export CSV</button>
+              <button id="btn-admin-logout" class="btn btn-ghost" type="button">🔒 Lock</button>
+            </div>
+          </div>
+
+          <!-- Attendance table -->
+          <div class="card table-card">
+            <h3 class="card-title">Attendance Records</h3>
+            <div class="table-wrapper">
+              <table id="attendance-table" class="attendance-table">
+                <thead>
+                  <tr>
+                    <th>Staff Name</th>
+                    <th>Staff ID</th>
+                    <th>Action</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody id="attendance-tbody">
+                  <tr>
+                    <td colspan="5" class="empty-state">No records found.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div><!-- /admin-dashboard -->
+
+      </section>
+
+    </main><!-- /main-content -->
+
+    <!-- ── BOTTOM NAVIGATION ── -->
+    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+      <button class="nav-btn" data-view="attendance" aria-label="Attendance">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Attendance</span>
+      </button>
+      <button class="nav-btn" data-view="register" aria-label="Register">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Register</span>
+      </button>
+      <button class="nav-btn" data-view="admin" aria-label="Admin">
+        <span class="nav-icon">🔐</span>
+        <span class="nav-label">Admin</span>
+      </button>
+    </nav>
+
+  </div><!-- /app-wrapper -->
+
+  <!-- ════════════════════════════════════════
+       SCRIPTS
+       app.js calls /api/* Vercel Functions — no client-side SDK needed.
+  ════════════════════════════════════════ -->
+
+  <!-- Main application logic -->
+  <script src="app.js"></script>
+
+</body>
+</html>
