@@ -172,7 +172,7 @@ function exportToCSV(rows, filename) {
   }
 
   // Build header row from the first object's keys
-  const headers = ['Staff Name', 'Staff ID', 'Action', 'Date', 'Time'];
+  const headers = ['Staff Name', 'Stewards ID', 'Action', 'Date', 'Time'];
 
   const csvLines = [
     headers.join(','),
@@ -427,7 +427,7 @@ async function handleRegister() {
     return;
   }
   if (!staffId) {
-    showToast('⚠️ Please enter a Staff ID.', 'warn');
+    showToast('⚠️ Please enter a Stewards ID.', 'warn');
     regStaffIdInput.focus();
     return;
   }
@@ -448,7 +448,7 @@ async function handleRegister() {
     const existing = await apiGetStaff(staffId);
     if (existing && existing.credential_id) {
       hideLoading();
-      showToast(`⚠️ Staff ID "${staffId}" is already registered with a biometric.`, 'warn', 6000);
+      showToast(`⚠️ Stewards ID "${staffId}" is already registered with a biometric.`, 'warn', 6000);
       return;
     }
   } catch (err) {
@@ -516,7 +516,7 @@ async function handleAttendance(action) {
   const staffId = attendanceStaffIdInput.value.trim().toUpperCase();
 
   if (!staffId) {
-    showToast('⚠️ Please enter your Staff ID.', 'warn');
+    showToast('⚠️ Please enter your Stewards ID.', 'warn');
     attendanceStaffIdInput.focus();
     return;
   }
@@ -538,13 +538,13 @@ async function handleAttendance(action) {
 
     if (!staffRecord) {
       hideLoading();
-      showToast('❌ Staff ID not found. Please register first.', 'error', 6000);
+      showToast('❌ Stewards ID not found. Please register first.', 'error', 6000);
       return;
     }
 
     if (!staffRecord.credential_id) {
       hideLoading();
-      showToast('❌ No biometric registered for this Staff ID. Please register first.', 'error', 6000);
+      showToast('❌ No biometric registered for this Stewards ID. Please register first.', 'error', 6000);
       return;
     }
   } catch (err) {
