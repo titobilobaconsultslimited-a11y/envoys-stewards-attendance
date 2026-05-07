@@ -699,7 +699,7 @@ function updateSummaryCards(records, dateFilter) {
   // When a date filter is applied, compute stats for that day;
   // otherwise compute from the loaded records.
   const todayRecords = dateFilter
-    ? records.filter(r => r.date === dateFilter)
+    ? records.filter(r => (r.date || '').toString().slice(0, 10) === dateFilter)
     : records;
 
   const checkins  = todayRecords.filter(r => r.action === 'check-in').length;
