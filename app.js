@@ -259,6 +259,9 @@ const allViews  = document.querySelectorAll('.view');
 // Track admin auth state in memory (not persisted — refreshing locks it again)
 let adminAuthenticated = false;
 
+// Attendance lock — when true, check-in and check-out are disabled until admin unlocks
+let attendanceLocked = false;
+
 /**
  * Switches the visible view.
  * @param {'attendance'|'register'|'admin'} viewName
@@ -493,6 +496,13 @@ async function handleRegister() {
 }
 
 /* ──────────────────────────────────────────────────────────────
+   ATTENDANCE LOCK BANNER (referenced by both attendance & admin)
+────────────────────────────────────────────────────────────── */
+const attendanceLockBanner = document.getElementById('attendance-lock-banner');
+const attendanceLockIcon   = document.getElementById('attendance-lock-icon');
+const attendanceLockText   = document.getElementById('attendance-lock-text');
+
+/* ──────────────────────────────────────────────────────────────
    9. ATTENDANCE FLOW (Check-in / Check-out)
 ────────────────────────────────────────────────────────────── */
 const attendanceStaffIdInput = document.getElementById('attendance-staff-id');
@@ -518,6 +528,12 @@ async function handleAttendance(action) {
   if (!staffId) {
     showToast('⚠️ Please enter your Stewards ID.', 'warn');
     attendanceStaffIdInput.focus();
+    return;
+  }
+
+  // ── Check attendance lock ──
+  if (attendanceLocked) {
+    showToast('🔒 Attendance is currently locked by the admin.', 'warn', 5000);
     return;
   }
 
@@ -596,9 +612,10 @@ const btnAdminLogin   = document.getElementById('btn-admin-login');
 const btnAdminLogout  = document.getElementById('btn-admin-logout');
 const btnFilter       = document.getElementById('btn-filter');
 const btnRefresh      = document.getElementById('btn-refresh');
-const btnExportCSV    = document.getElementById('btn-export-csv');
-const filterDate      = document.getElementById('filter-date');
-const filterStaff     = document.getElementById('filter-staff');
+const btnExportCSV          = document.getElementById('btn-export-csv');
+const btnToggleAttendance   = document.getElementById('btn-toggle-attendance');
+const filterDate            = document.getElementById('filter-date');
+const filterStaff           = document.getElementById('filter-staff');
 const attendanceTbody = document.getElementById('attendance-tbody');
 const statCheckins    = document.getElementById('stat-checkins');
 const statCheckouts   = document.getElementById('stat-checkouts');
@@ -644,6 +661,41 @@ btnRefresh.addEventListener('click',   loadAdminData);
 btnExportCSV.addEventListener('click', () => {
   exportToCSV(lastLoadedRecords, `attendance_${todayISO()}.csv`);
 });
+
+// ── Attendance Lock Toggle ──
+btnToggleAttendance.addEventListener('click', toggleAttendanceLock);
+
+/**
+ * Toggles the attendance lock on/off and updates the UI accordingly.
+ */
+function toggleAttendanceLock() {
+  attendanceLocked = !attendanceLocked;
+  updateAttendanceLockUI();
+  const msg = attendanceLocked
+    ? '🔒 Attendance is now LOCKED. Staff cannot check in or out.'
+    : '🔓 Attendance is now OPEN. Staff can check in and out.';
+  showToast(msg, attendanceLocked ? 'warn' : 'success', 5000);
+}
+
+/**
+ * Syncs the attendance banner (attendance view) and the admin toggle button
+ * to match the current `attendanceLocked` state.
+ */
+function updateAttendanceLockUI() {
+  if (attendanceLocked) {
+    attendanceLockBanner.className = 'attendance-lock-banner attendance-lock-banner--locked';
+    attendanceLockIcon.textContent  = '🔴';
+    attendanceLockText.innerHTML    = 'Attendance is <strong>Locked</strong> — check-in and check-out are disabled.';
+    btnToggleAttendance.className   = 'btn btn-success';
+    btnToggleAttendance.textContent = '🔓 Open Attendance';
+  } else {
+    attendanceLockBanner.className = 'attendance-lock-banner attendance-lock-banner--open';
+    attendanceLockIcon.textContent  = '🟢';
+    attendanceLockText.innerHTML    = 'Attendance is <strong>Open</strong>';
+    btnToggleAttendance.className   = 'btn btn-warning';
+    btnToggleAttendance.textContent = '🔒 Lock Attendance';
+  }
+}
 
 async function loadAdminData() {
   if (!adminAuthenticated) return;

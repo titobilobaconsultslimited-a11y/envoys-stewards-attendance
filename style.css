@@ -381,6 +381,16 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   color: var(--red);
 }
 
+/* Warning — used for "Lock Attendance" toggle */
+.btn-warning {
+  background: #dd6b20;
+  color: var(--white);
+}
+.btn-warning:hover:not(:disabled) {
+  background: #c05621;
+  box-shadow: 0 4px 20px rgba(221, 107, 32, 0.35);
+}
+
 .btn-large {
   height: 56px;
   font-size: 1.0625rem;
@@ -407,6 +417,29 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+/* ── ATTENDANCE LOCK BANNER ──────────────────────────────────── */
+.attendance-lock-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  transition: background var(--transition), border-color var(--transition);
+}
+.attendance-lock-banner--open {
+  background: rgba(46, 184, 75, 0.15);
+  border: 1px solid rgba(46, 184, 75, 0.35);
+  color: #6ee7b7;
+}
+.attendance-lock-banner--locked {
+  background: rgba(229, 62, 62, 0.15);
+  border: 1px solid rgba(229, 62, 62, 0.35);
+  color: #fca5a5;
 }
 
 /* ── ACTIVITY FEED ───────────────────────────────────────────── */

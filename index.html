@@ -59,6 +59,12 @@
           <p class="view-subtitle">Enter your Stewards ID and scan your biometric to check in or out.</p>
         </div>
 
+        <!-- Attendance lock status banner (updated dynamically by admin) -->
+        <div id="attendance-lock-banner" class="attendance-lock-banner attendance-lock-banner--open" role="status" aria-live="polite">
+          <span id="attendance-lock-icon">🟢</span>
+          <span id="attendance-lock-text">Attendance is <strong>Open</strong></span>
+        </div>
+
         <div class="card">
           <div class="form-group">
             <label for="attendance-staff-id" class="form-label">Stewards ID</label>
@@ -207,7 +213,8 @@
               <button id="btn-filter" class="btn btn-primary" type="button">🔍 Apply Filter</button>
               <button id="btn-refresh" class="btn btn-outline" type="button">🔄 Refresh</button>
               <button id="btn-export-csv" class="btn btn-outline" type="button">📥 Export CSV</button>
-              <button id="btn-admin-logout" class="btn btn-ghost" type="button">🔒 Lock</button>
+              <button id="btn-toggle-attendance" class="btn btn-warning" type="button">🔒 Lock Attendance</button>
+              <button id="btn-admin-logout" class="btn btn-ghost" type="button">🔒 Lock Dashboard</button>
             </div>
           </div>
 
